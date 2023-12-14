@@ -6,4 +6,4 @@ fileExistenceTests:
 fileContentTests:
   - name: "Check 'vault version' command worked"
     path: "/tmp/vault-version"
-    expectedContents: ["^Vault v\d+\.\d+\.\d+"]
+    expectedContents: ["^Vault v\\d+\\.\\d+\\.\\d+"]
