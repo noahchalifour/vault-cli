@@ -1,0 +1,64 @@
+stages:
+  - build
+  - test
+  - push
+
+variables:
+  IMAGE_TAR_PATH: image.tar
+  TEST_IMAGE_TAG: $CI_REGISTRY_IMAGE:test-$CI_COMMIT_SHORT_SHA
+
+docker:build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - /kaniko/executor
+      --context .
+      --dockerfile ./Dockerfile
+      --destination "$TEST_IMAGE_TAG"
+      --no-push
+      --cache=true
+      --cache-repo="$CI_REGISTRY_IMAGE/cache"
+      --tarPath "$IMAGE_TAR_PATH"
+  artifacts:
+    paths:
+      - $IMAGE_TAR_PATH
+    when: on_success
+
+docker:test:
+  stage: test
+  image: 
+    name: gcr.io/gcp-runtimes/container-structure-test:debug
+    entrypoint: [""]
+  script:
+    - /container-structure-test test
+      --driver tar
+      --image "$TEST_IMAGE_TAG"
+      --config ./tests/config.yaml
+
+docker:latest:push:
+  stage: push
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [""]
+  script:
+    - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - crane push $IMAGE_TAR_PATH $CI_REGISTRY_IMAGE:latest
+  needs:
+    - docker:build
+  only:
+    - tags
+
+docker:tag:push:
+  stage: push
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [""]
+  script:
+    - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - crane push $IMAGE_TAR_PATH $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  needs:
+    - docker:build
+  only:
+    - tags

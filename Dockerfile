@@ -6,4 +6,7 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/h
 RUN apt update && apt install vault -y --no-install-recommends
 RUN apt clean && rm -rf /var/lib/apt/lists/*
 
+# Execute 'vault version' and store the result in a file, this is used for a test case to make sure the CLI is actually working
+RUN vault version > /tmp/vault-version
+
 ENTRYPOINT [ "vault" ]

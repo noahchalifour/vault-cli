@@ -1,6 +1,9 @@
 schemaVersion: 2.0.0
-commandTests:
-  - name: "version"
-    command: "vault"
-    args: ["version"]
-    expectedOutput: ["Vault v\\d+\\.\\d+\\.\\d+"]
+fileExistenceTests:
+  - name: "Vault binary exists"
+    path: "/usr/bin/vault"
+    shouldExist: true
+fileContentTests:
+  - name: "Check 'vault version' command worked"
+    path: "/tmp/vault-version"
+    expectedContents: ["^Vault v\d+\.\d+\.\d+"]
