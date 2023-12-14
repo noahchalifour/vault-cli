@@ -8,7 +8,7 @@ To build the image, run:
 
 ```
 docker build \
-    -t docker-vault:latest \
+    -t vault:latest \
     .
 ```
 
@@ -17,6 +17,6 @@ docker build \
 You can use the image by running the container with any command you want, example:
 
 ```
-docker run -it docker-vault \
+docker run -it \
     vault version
 ```

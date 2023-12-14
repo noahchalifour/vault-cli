@@ -1,0 +1,6 @@
+schemaVersion: 2.0.0
+commandTests:
+  - name: "version"
+    command: "vault"
+    args: ["version"]
+    expectedOutput: ["Vault v\\d+\\.\\d+\\.\\d+"]
