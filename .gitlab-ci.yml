@@ -5,7 +5,6 @@ stages:
 
 variables:
   IMAGE_TAR_PATH: image.tar
-  TEST_IMAGE_TAG: $CI_REGISTRY_IMAGE:test-$CI_COMMIT_SHORT_SHA
 
 docker:build:
   stage: build
@@ -16,7 +15,7 @@ docker:build:
     - /kaniko/executor
       --context .
       --dockerfile ./Dockerfile
-      --destination "$TEST_IMAGE_TAG"
+      --destination "$CI_REGISTRY_IMAGE"
       --no-push
       --cache=true
       --cache-repo="$CI_REGISTRY_IMAGE/cache"
@@ -34,7 +33,7 @@ docker:test:
   script:
     - /container-structure-test test
       --driver tar
-      --image "$TEST_IMAGE_TAG"
+      --image "$IMAGE_TAR_PATH"
       --config ./tests/config.yaml
 
 docker:latest:push:
